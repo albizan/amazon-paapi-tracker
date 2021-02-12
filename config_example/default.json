@@ -1,0 +1,11 @@
+{
+  "paapi_credentials": [
+    {
+      "key": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+      "secret": "xxxxxxxxxxxxxxxxxxxxxxxxx",
+      "tag": "xxxxxxxxxxx-xx",
+      "delay": 2500
+    }
+  ],
+  "db_url": "postgres://user:password@localhost/db_name"
+}
