@@ -1,11 +1,15 @@
 {
   "paapi_credentials": [
     {
-      "key": "xxxxxxxxxxxxxxxxxxxxxxxxx",
-      "secret": "xxxxxxxxxxxxxxxxxxxxxxxxx",
-      "tag": "xxxxxxxxxxx-xx",
-      "delay": 2500
+      "key": "xxx",
+      "secret": "xxx",
+      "tag": "xxx",
+      "delay": 1234
     }
   ],
-  "db_url": "postgres://user:password@localhost/db_name"
+  "db_url": "xxx",
+  "redis": {
+    "host": "xxx",
+    "port": 1234
+  }
 }
