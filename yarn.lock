@@ -91,6 +91,13 @@ array-find-index@^1.0.1:
   resolved "https://registry.yarnpkg.com/array-find-index/-/array-find-index-1.0.2.tgz#df010aa1287e164bbda6f9723b0a96a1ec4187a1"
   integrity sha1-3wEKoSh+Fku9pvlyOwqWoexBh6E=
 
+axios@^0.21.0:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  dependencies:
+    follow-redirects "^1.10.0"
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
@@ -378,6 +385,11 @@ find-up@^1.0.0:
   dependencies:
     path-exists "^2.0.0"
     pinkie-promise "^2.0.0"
+
+follow-redirects@^1.10.0:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.2.tgz#dd73c8effc12728ba5cf4259d760ea5fb83e3147"
+  integrity sha512-6mPTgLxYm3r6Bkkg0vNM0HTjfGrOEtsfbhagQvbxDEsEkpNhw582upBaoRZylzen6krEmxXJgt9Ju6HiI4O7BA==
 
 fs.realpath@^1.0.0:
   version "1.0.0"
@@ -745,6 +757,13 @@ p-map@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/p-map/-/p-map-2.1.0.tgz#310928feef9c9ecc65b68b17693018a665cea175"
   integrity sha512-y3b8Kpd8OAN444hxfBbFfj1FY/RjtTd8tzYwhUqNYXx0fXx2iX4maP4Qr6qhIKbQXI02wTLAda4fYUbDagTUFw==
+
+paapi5-typescript-sdk@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/paapi5-typescript-sdk/-/paapi5-typescript-sdk-0.2.0.tgz#85620c8a3ef5baf484e5a86be6186837b440545f"
+  integrity sha512-xWymOxmETAoguRpzXXjrKorqFizHKdHAip4fjDHXXannvyvfCWlHt+wyxQkuxN0QAQp8lnFp3KF/6FB9bGDDhw==
+  dependencies:
+    axios "^0.21.0"
 
 packet-reader@1.0.0:
   version "1.0.0"
@@ -1171,6 +1190,11 @@ to-regex-range@^5.0.1:
   integrity sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==
   dependencies:
     is-number "^7.0.0"
+
+toad-scheduler@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/toad-scheduler/-/toad-scheduler-1.0.2.tgz#ab78d2a9f703d3d2541c73a79ea553150c23ed55"
+  integrity sha512-LNsR0DsiuQbe1vIGnhC5C8Atg+s1QVqshyGqk3EtiZz56ghokYsFc3zNgF7KH0GhQTKNRsQPzxNh43Eh9chueA==
 
 tree-kill@^1.2.2:
   version "1.2.2"
