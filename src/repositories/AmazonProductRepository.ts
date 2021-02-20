@@ -4,10 +4,14 @@ import { AmazonProduct } from "../entities/AmazonProduct";
 class AmazonProductRepository {
   async getAsins(): Promise<string[]> {
     const amazonProductRepository = getRepository(AmazonProduct);
-    return await amazonProductRepository
+    // Get a list of object containing only the asin (Partial<AmazonProduct>)
+    const partials: Partial<AmazonProduct>[] = await amazonProductRepository
       .createQueryBuilder("amazonProduct")
       .select("amazonProduct.asin")
-      .getRawMany();
+      .getMany();
+
+    // Return all the asins as a list
+    return partials.map((partial) => partial.asin);
   }
 }
 
