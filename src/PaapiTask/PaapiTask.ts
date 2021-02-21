@@ -6,7 +6,7 @@ import { chunk } from "../utils";
 import Paapi from "../Paapi";
 
 export default class PaapiTask {
-  private chunks: string[];
+  private chunks: string[][];
   private index: number;
   private delay: number;
   private paapi: Paapi;
@@ -22,10 +22,24 @@ export default class PaapiTask {
   }
 
   getTask(): Task {
-    return new Task("print chunks", () => {
-      this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
-      this.index = this.index === this.chunks.length - 1 ? 0 : this.index + 1;
-    });
+    return new Task(
+      "print chunks",
+      () => {
+        this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
+        this.paapi.getItems(this.chunks[this.index]).then((data) => {
+          if (data) {
+            const items = data.ItemsResult?.Items || [];
+            items.forEach((item) => {
+              this.queue.add(item.ASIN, item);
+            });
+          }
+        });
+        this.index = this.index === this.chunks.length - 1 ? 0 : this.index + 1;
+      },
+      (err: Error) => {
+        this.error(err.message);
+      }
+    );
   }
 
   getJob(): SimpleIntervalJob {
@@ -33,6 +47,12 @@ export default class PaapiTask {
   }
 
   private log(message) {
-    console.log(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] ${message}`);
+    console.log(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [PaapiTask] ${message}`);
+  }
+
+  private error(message) {
+    console.error(
+      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [PaapiTask] ${message}`
+    );
   }
 }
