@@ -1,12 +1,4 @@
-import {
-  GetItemsRequest,
-  GetItemsPayload,
-  PartnerType,
-  Host,
-  Region,
-  ItemsResult,
-  GetItemsResponse,
-} from "paapi5-typescript-sdk";
+import { GetItemsRequest, GetItemsPayload, PartnerType, Host, Region, GetItemsResponse } from "paapi5-typescript-sdk";
 import PaapiCredentials from "../PaapiCredentials";
 
 export default class Paapi {
