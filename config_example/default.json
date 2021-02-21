@@ -7,6 +7,9 @@
       "delay": 1234
     }
   ],
+  "tracker": {
+    "deal_threshold": 20
+  },
   "db_url": "xxx",
   "redis": {
     "host": "xxx",
