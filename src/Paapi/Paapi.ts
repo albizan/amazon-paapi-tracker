@@ -1,5 +1,7 @@
 import { GetItemsRequest, GetItemsPayload, PartnerType, Host, Region, GetItemsResponse } from "paapi5-typescript-sdk";
 import PaapiCredentials from "../PaapiCredentials";
+import { format } from "date-fns";
+import italianLocale from "date-fns/locale/it";
 
 export default class Paapi {
   private credentials: PaapiCredentials;
@@ -8,7 +10,7 @@ export default class Paapi {
     this.credentials = paapiCredentials;
   }
 
-  async getItems(asins: string[]) {
+  async getItems(asins: string[]): Promise<GetItemsResponse> {
     const payload: GetItemsPayload = this.generatePayload(asins);
     const request = new GetItemsRequest(
       payload,
@@ -19,14 +21,13 @@ export default class Paapi {
       Host.ITALY,
       Region.ITALY
     );
+    try {
+      const data: GetItemsResponse = await request.send();
 
-    const data: GetItemsResponse = await request.send();
-    if (data.Errors) {
-      console.log(data.Errors);
+      return data;
+    } catch (error) {
+      this.error(error.message);
     }
-    data.ItemsResult.Items.forEach((item) => {
-      console.log(item);
-    });
   }
 
   private generatePayload(asins: string[]): GetItemsPayload {
@@ -40,5 +41,13 @@ export default class Paapi {
 
   getTag(): string {
     return this.credentials.tag;
+  }
+
+  private log(message) {
+    console.log(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [Paapi] ${message}`);
+  }
+
+  private error(message) {
+    console.error(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [Paapi] ${message}`);
   }
 }
