@@ -11,6 +11,7 @@ export default class PaapiTask {
   private delay: number;
   private paapi: Paapi;
   private queue: Queue;
+  private errorMessages: Set<string>;
 
   constructor(asins: string[], delay: number, paapi: Paapi, queue: Queue) {
     // I can send up to 10 asins in a request
@@ -19,15 +20,21 @@ export default class PaapiTask {
     this.delay = delay;
     this.paapi = paapi;
     this.queue = queue;
+    this.errorMessages = new Set();
   }
 
   getTask(): Task {
     return new Task(
       "print chunks",
       () => {
-        this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
+        // this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
         this.paapi.getItems(this.chunks[this.index]).then((data) => {
-          if (data) {
+          if (data?.Errors) {
+            data.Errors.forEach((paapiError) =>
+              this.errorMessages.add(paapiError.Message)
+            );
+          }
+          if (data?.ItemsResult) {
             const items = data.ItemsResult?.Items || [];
             items.forEach((item) => {
               this.queue.add(item.ASIN, item);
@@ -47,12 +54,18 @@ export default class PaapiTask {
   }
 
   private log(message) {
-    console.log(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [PaapiTask] ${message}`);
+    console.log(
+      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
+        locale: italianLocale,
+      })}] [PaapiTask] ${message}`
+    );
   }
 
   private error(message) {
     console.error(
-      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [PaapiTask] ${message}`
+      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
+        locale: italianLocale,
+      })}] [PaapiTask] ${message}`
     );
   }
 }
