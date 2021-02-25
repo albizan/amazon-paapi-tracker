@@ -1,4 +1,11 @@
-import { GetItemsRequest, GetItemsPayload, PartnerType, Host, Region, GetItemsResponse } from "paapi5-typescript-sdk";
+import {
+  GetItemsRequest,
+  GetItemsPayload,
+  PartnerType,
+  Host,
+  Region,
+  GetItemsResponse,
+} from "paapi5-typescript-sdk";
 import PaapiCredentials from "../PaapiCredentials";
 import { format } from "date-fns";
 import italianLocale from "date-fns/locale/it";
@@ -35,7 +42,7 @@ export default class Paapi {
       Condition: "Any",
       ItemIdType: "ASIN",
       ItemIds: asins,
-      Resources: ["ItemInfo.Title"],
+      Resources: ["ItemInfo.Title", "Offers.Summaries.LowestPrice"],
     };
   }
 
@@ -44,10 +51,18 @@ export default class Paapi {
   }
 
   private log(message) {
-    console.log(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [Paapi] ${message}`);
+    console.log(
+      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
+        locale: italianLocale,
+      })}] [Paapi] ${message}`
+    );
   }
 
   private error(message) {
-    console.error(`[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", { locale: italianLocale })}] [Paapi] ${message}`);
+    console.error(
+      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
+        locale: italianLocale,
+      })}] [Paapi] ${message}`
+    );
   }
 }
