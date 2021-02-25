@@ -13,6 +13,15 @@ class AmazonProductRepository {
     // Return all the asins as a list
     return partials.map((partial) => partial.asin);
   }
+
+  async save(amazonProduct: AmazonProduct) {
+    try {
+      const amazonProductRepository = getRepository(AmazonProduct);
+      await amazonProductRepository.save(amazonProduct);
+    } catch (error) {
+      console.error("Error saving amazon product on Database");
+    }
+  }
 }
 
 export default new AmazonProductRepository();
