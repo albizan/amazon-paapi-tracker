@@ -4,7 +4,7 @@ import { Worker } from "bullmq";
 import amazonProductRepository from "./repositories/AmazonProductRepository";
 import TaskManager from "./TaskManager";
 import * as config from "config";
-import { Item } from "paapi5-typescript-sdk";
+import job from "./paapiJob";
 
 const connectionOptions: ConnectionOptions = {
   type: "postgres",
@@ -28,11 +28,8 @@ export default class App {
       taskManager.createTasks(asins);
       taskManager.startTasks();
 
-      const worker = new Worker("parse-asins", async (job) => {
-        const amazonRawItem: Item = job.data;
-        console.log(amazonRawItem);
-      });
-      console.log("Worker online");
+      // create new worker to process items
+      new Worker("parse-asins", job);
     } catch (error) {
       console.error("Error - can't connect to the database " + error);
     }
