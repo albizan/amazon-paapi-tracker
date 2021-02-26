@@ -22,6 +22,11 @@ class AmazonProductRepository {
       console.error("Error saving amazon product on Database");
     }
   }
+
+  async findOne(asin: string) {
+    const amazonProductRepository = getRepository(AmazonProduct);
+    return await amazonProductRepository.findOne(asin);
+  }
 }
 
 export default new AmazonProductRepository();
