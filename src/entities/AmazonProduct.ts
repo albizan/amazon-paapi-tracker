@@ -23,18 +23,6 @@ export class AmazonProduct {
   @Column({ nullable: true, type: "real" })
   warehousePrice: number;
 
-  @Column({ nullable: true, type: "real" })
-  average: number;
-
-  @Column({ default: 0, type: "int" })
-  averageSize: number;
-
-  @Column({ nullable: true, type: "real" })
-  warehouseAverage: number;
-
-  @Column({ default: 0, type: "int" })
-  warehouseAverageSize: number;
-
   @Column({ default: 0 })
   iterations: number;
 }
