@@ -1,10 +1,10 @@
 import "reflect-metadata";
 import { createConnection, ConnectionOptions } from "typeorm";
-import { Worker } from "bullmq";
+import WorkerManager from "./WorkerManager";
 import amazonProductRepository from "./repositories/AmazonProductRepository";
 import TaskManager from "./TaskManager";
 import * as config from "config";
-import job from "./paapiJob";
+import TelegramBot from "./TelegramBot";
 
 const connectionOptions: ConnectionOptions = {
   type: "postgres",
@@ -28,10 +28,15 @@ export default class App {
       taskManager.createTasks(asins);
       taskManager.startTasks();
 
-      // create new worker to process items
-      new Worker("parse-asins", job);
+      const bot = new TelegramBot(taskManager);
+
+      // Start background jobs on amazon products' queue
+      const amazonProductAnalyzer = new WorkerManager(bot);
+      amazonProductAnalyzer.start();
+
+      bot.launch();
     } catch (error) {
-      console.error("Error - can't connect to the database " + error);
+      console.error(error);
     }
   }
 }
