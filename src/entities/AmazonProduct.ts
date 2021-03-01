@@ -9,6 +9,9 @@ export class AmazonProduct {
   title: string;
 
   @Column({ nullable: true })
+  category: string;
+
+  @Column({ nullable: true })
   url: string;
 
   @Column({ nullable: true })
