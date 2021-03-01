@@ -30,9 +30,7 @@ export default class PaapiTask {
         // this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
         this.paapi.getItems(this.chunks[this.index]).then((data) => {
           if (data?.Errors) {
-            data.Errors.forEach((paapiError) =>
-              this.errorMessages.add(paapiError.Message)
-            );
+            data.Errors.forEach((paapiError) => this.errorMessages.add(paapiError.Message));
           }
           if (data?.ItemsResult) {
             const items = data.ItemsResult?.Items || [];
@@ -42,6 +40,9 @@ export default class PaapiTask {
           }
         });
         this.index = this.index === this.chunks.length - 1 ? 0 : this.index + 1;
+        /* if (this.index === 0) {
+          this.log("Iterazione completata");
+        } */
       },
       (err: Error) => {
         this.error(err.message);
