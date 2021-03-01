@@ -25,7 +25,7 @@ export default class PaapiTask {
 
   getTask(): Task {
     return new Task(
-      "print chunks",
+      "amazon-paapi-requests",
       () => {
         // this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
         this.paapi.getItems(this.chunks[this.index]).then((data) => {
