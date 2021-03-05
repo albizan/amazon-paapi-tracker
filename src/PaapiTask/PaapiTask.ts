@@ -1,9 +1,10 @@
 import { SimpleIntervalJob, Task } from "toad-scheduler";
 import { Queue } from "bullmq";
-import { format } from "date-fns";
-import italianLocale from "date-fns/locale/it";
+import * as dayjs from "dayjs";
+import "dayjs/locale/it"; // import locale
 import { chunk } from "../utils";
 import Paapi from "../Paapi";
+import { TaskStatus } from "./Status";
 
 export default class PaapiTask {
   private chunks: string[][];
@@ -11,6 +12,7 @@ export default class PaapiTask {
   private delay: number;
   private paapi: Paapi;
   private queue: Queue;
+  private latestIteration: string;
   private errorMessages: Set<string>;
 
   constructor(asins: string[], delay: number, paapi: Paapi, queue: Queue) {
@@ -21,11 +23,29 @@ export default class PaapiTask {
     this.paapi = paapi;
     this.queue = queue;
     this.errorMessages = new Set();
+
+    /* @TODO delete
+    this.paapi.getItems(["B07VZR1WDT"]).then((result) => {
+      result.ItemsResult.Items.forEach((x) => console.log(x.Offers.Listings));
+    }); */
   }
 
-  getTask(): Task {
+  getJob(): SimpleIntervalJob {
+    return new SimpleIntervalJob({ milliseconds: this.delay }, this.getTask());
+  }
+
+  getStatus(): TaskStatus {
+    return {
+      tag: this.paapi.getTag(),
+      chunks: this.chunks.length,
+      index: this.index,
+      latestIteration: this.latestIteration,
+    };
+  }
+
+  private getTask(): Task {
     return new Task(
-      "amazon-paapi-requests",
+      this.paapi.getTag(),
       () => {
         // this.log(`Index: ${this.index} - ${this.chunks[this.index]}`);
         this.paapi.getItems(this.chunks[this.index]).then((data) => {
@@ -40,9 +60,9 @@ export default class PaapiTask {
           }
         });
         this.index = this.index === this.chunks.length - 1 ? 0 : this.index + 1;
-        /* if (this.index === 0) {
-          this.log("Iterazione completata");
-        } */
+        if (this.index === 0) {
+          this.latestIteration = dayjs().locale("it").format("HH:mm:ss");
+        }
       },
       (err: Error) => {
         this.error(err.message);
@@ -50,23 +70,7 @@ export default class PaapiTask {
     );
   }
 
-  getJob(): SimpleIntervalJob {
-    return new SimpleIntervalJob({ milliseconds: this.delay }, this.getTask());
-  }
-
-  private log(message) {
-    console.log(
-      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
-        locale: italianLocale,
-      })}] [PaapiTask] ${message}`
-    );
-  }
-
   private error(message) {
-    console.error(
-      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
-        locale: italianLocale,
-      })}] [PaapiTask] ${message}`
-    );
+    console.error(`[${dayjs().locale("it").format("HH:mm:ss")}] [PaapiTask] ${message}`);
   }
 }
