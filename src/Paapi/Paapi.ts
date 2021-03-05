@@ -1,14 +1,7 @@
-import {
-  GetItemsRequest,
-  GetItemsPayload,
-  PartnerType,
-  Host,
-  Region,
-  GetItemsResponse,
-} from "paapi5-typescript-sdk";
+import { GetItemsRequest, GetItemsPayload, PartnerType, Host, Region, GetItemsResponse } from "paapi5-typescript-sdk";
 import PaapiCredentials from "../PaapiCredentials";
-import { format } from "date-fns";
-import italianLocale from "date-fns/locale/it";
+import * as dayjs from "dayjs";
+import "dayjs/locale/it"; // import locale
 
 export default class Paapi {
   private credentials: PaapiCredentials;
@@ -42,7 +35,8 @@ export default class Paapi {
       Condition: "Any",
       ItemIdType: "ASIN",
       ItemIds: asins,
-      Resources: ["ItemInfo.Title", "Offers.Summaries.LowestPrice"],
+      OfferCount: 1,
+      Resources: ["ItemInfo.Title", "Images.Primary.Large", "Offers.Summaries.LowestPrice", "Offers.Listings.Price", "Offers.Listings.MerchantInfo"],
     };
   }
 
@@ -50,19 +44,7 @@ export default class Paapi {
     return this.credentials.tag;
   }
 
-  private log(message) {
-    console.log(
-      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
-        locale: italianLocale,
-      })}] [Paapi] ${message}`
-    );
-  }
-
   private error(message) {
-    console.error(
-      `[${format(new Date(), "HH:mm:ss - dd MMMM yyyy", {
-        locale: italianLocale,
-      })}] [Paapi] ${message}`
-    );
+    console.error(`[${dayjs().locale("it").format("HH:mm:ss")}] {Paapi} ${message}`);
   }
 }
