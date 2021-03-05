@@ -7,6 +7,7 @@ import { Queue } from "bullmq";
 import Task from "../PaapiTask";
 import Paapi from "../Paapi";
 import PaapiCredentials from "../PaapiCredentials";
+import { TaskStatus } from "../PaapiTask/Status";
 
 export default class SchedulerManager {
   private paapiCredentialsAsList: PaapiCredentials[];
@@ -22,17 +23,16 @@ export default class SchedulerManager {
     const queue = new Queue("parse-asins");
     const tempChunkedAsins = this.balanceAsinsInTasks(asins);
     this.tasks = tempChunkedAsins.map((asins, index) => {
-      return new Task(
-        asins,
-        this.paapiCredentialsAsList[index].delay,
-        new Paapi(this.paapiCredentialsAsList[index]),
-        queue
-      );
+      return new Task(asins, this.paapiCredentialsAsList[index].delay, new Paapi(this.paapiCredentialsAsList[index]), queue);
     });
   }
 
   startTasks() {
     this.tasks.forEach((task) => this.paapiScheduler.addSimpleIntervalJob(task.getJob()));
+  }
+
+  getStatus(): TaskStatus[] {
+    return this.tasks.map((task) => task.getStatus());
   }
 
   private balanceRemainingAsinsInTasks(rates: number[]): number[] {
