@@ -5,3 +5,13 @@ export const defaultMessage = (savedItem: AmazonProduct, price: number, oldPrice
     diff ? `<b>Sconto: ${diff.toFixed(2)}</b>` : ""
   }`;
 };
+
+export const amazonProductInfoMessage = (item: AmazonProduct): string => {
+  return `
+    <a href="${item.url}">${item.title}</a>
+    \nAsin: ${item.asin}
+    \nNuovo: ${item.price}
+    \nUsato: ${item.warehousePrice}
+    \nVisite: ${item.iterations || 0}
+    \nUltima visita: ${item.visitedAt || "N/A"}`;
+};
