@@ -1,8 +1,9 @@
-import { Telegraf } from "telegraf";
+import { Context, Telegraf } from "telegraf";
 import TaskManager from "../TaskManager";
 import * as config from "config";
 import { Commands } from "./Commands";
-import { startupMessage } from "./types";
+import amazonProductRepository from "../repositories/AmazonProductRepository";
+import { amazonProductInfoMessage } from "../TelegramBot/MessageBuilder";
 
 const token = config.get("bot.token");
 const logChannel = config.get("bot.log_channel_id");
@@ -18,6 +19,13 @@ export default class TelegramBot {
   }
 
   private setup() {
+    this.instance.on("text", async (ctx) => {
+      if (ctx.message.text.length === 10 && ctx.message.text.toUpperCase().startsWith("B")) {
+        const savedItem = await amazonProductRepository.findOne(ctx.message.text.toUpperCase());
+        this.sendMessage(amazonProductInfoMessage(savedItem));
+      }
+    });
+
     this.instance.command("status", this.commands.status);
   }
 
