@@ -16,7 +16,13 @@ class WorkerManager {
   constructor(private bot: TelegramBot) {}
 
   start() {
-    this.worker = new Worker("parse-asins", this.amazonComparison);
+    this.worker = new Worker("parse-asins", this.amazonComparison, {
+      connection: {
+        host: config.get("redis.host"),
+        port: config.get("redis.port"),
+        password: config.get("redis.password"),
+      },
+    });
   }
 
   amazonComparison = async (job) => {

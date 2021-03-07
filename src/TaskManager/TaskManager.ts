@@ -3,7 +3,7 @@
 
 import * as config from "config";
 import { ToadScheduler } from "toad-scheduler";
-import { Queue } from "bullmq";
+import { Queue, ConnectionOptions } from "bullmq";
 import Task from "../PaapiTask";
 import Paapi from "../Paapi";
 import PaapiCredentials from "../PaapiCredentials";
@@ -20,7 +20,13 @@ export default class SchedulerManager {
   }
 
   createTasks(asins: string[]) {
-    const queue = new Queue("parse-asins");
+    const queue = new Queue("parse-asins", {
+      connection: {
+        host: config.get("redis.host"),
+        port: config.get("redis.port"),
+        password: config.get("redis.password"),
+      },
+    });
     const tempChunkedAsins = this.balanceAsinsInTasks(asins);
     this.tasks = tempChunkedAsins.map((asins, index) => {
       return new Task(asins, this.paapiCredentialsAsList[index].delay, new Paapi(this.paapiCredentialsAsList[index]), queue);
