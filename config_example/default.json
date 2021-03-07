@@ -10,9 +10,14 @@
   "tracker": {
     "deal_threshold": 20
   },
+  "bot": {
+    "token": "xxx",
+    "log_channel_id": "xxx"
+  },
   "db_url": "xxx",
   "redis": {
     "host": "xxx",
-    "port": 1234
+    "port": 6379,
+    "password": "xxx"
   }
 }
