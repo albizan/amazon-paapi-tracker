@@ -20,6 +20,7 @@ export default class TelegramBot {
 
   private setup() {
     this.instance.command("status", this.commands.status);
+    this.instance.command("errors", this.commands.errors);
     this.instance.on("text", async (ctx) => {
       if (ctx.message.text.length === 10 && ctx.message.text.toUpperCase().startsWith("B")) {
         const savedItem = await amazonProductRepository.findOne(ctx.message.text.toUpperCase());
