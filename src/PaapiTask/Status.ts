@@ -3,4 +3,5 @@ export class TaskStatus {
   chunks: number;
   index: number;
   latestIteration: string;
+  latestRequestedAsin: string;
 }
