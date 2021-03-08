@@ -13,6 +13,7 @@ export default class PaapiTask {
   private paapi: Paapi;
   private queue: Queue;
   private latestIteration: string;
+  private latestRequestedAsin: string;
   private errorMessages: Set<string>;
 
   constructor(asins: string[], delay: number, paapi: Paapi, queue: Queue) {
@@ -40,7 +41,12 @@ export default class PaapiTask {
       chunks: this.chunks.length,
       index: this.index,
       latestIteration: this.latestIteration,
+      latestRequestedAsin: this.latestRequestedAsin,
     };
+  }
+
+  getErrors(): string[] {
+    return Array.from(this.errorMessages);
   }
 
   private getTask(): Task {
@@ -57,6 +63,9 @@ export default class PaapiTask {
             items.forEach((item) => {
               this.queue.add(item.ASIN, item);
             });
+            if (items[0]) {
+              this.latestRequestedAsin = items[0].ASIN;
+            }
           }
         });
         this.index = this.index === this.chunks.length - 1 ? 0 : this.index + 1;
