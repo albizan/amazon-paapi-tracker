@@ -20,7 +20,6 @@ export class Commands {
   };
 
   errors = (ctx: Context) => {
-    console.log("EEEEE");
     const errors = this.taskManager.getErrors();
     let msg = "";
     errors.forEach((errorsArray) => {
