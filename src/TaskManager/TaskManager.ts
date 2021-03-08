@@ -3,7 +3,7 @@
 
 import * as config from "config";
 import { ToadScheduler } from "toad-scheduler";
-import { Queue, ConnectionOptions } from "bullmq";
+import { Queue } from "bullmq";
 import Task from "../PaapiTask";
 import Paapi from "../Paapi";
 import PaapiCredentials from "../PaapiCredentials";
