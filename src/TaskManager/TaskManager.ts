@@ -41,6 +41,10 @@ export default class SchedulerManager {
     return this.tasks.map((task) => task.getStatus());
   }
 
+  getErrors(): string[][] {
+    return this.tasks.map((task) => task.getErrors());
+  }
+
   private balanceRemainingAsinsInTasks(rates: number[]): number[] {
     // Balance schedulers with appropiate number of asin, lower the delay faster the scheduler, faster schedulers receive more asins
     let sumOfRates = rates.reduce((acc, delay) => (acc += delay), 0);
