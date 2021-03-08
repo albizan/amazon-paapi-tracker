@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import { createConnection, ConnectionOptions } from "typeorm";
 import WorkerManager from "./WorkerManager";
-import amazonProductRepository from "./repositories/AmazonProductRepository";
 import TaskManager from "./TaskManager";
 import * as config from "config";
 import TelegramBot from "./TelegramBot";
@@ -20,12 +19,8 @@ export default class App {
       await createConnection(connectionOptions);
       console.log("Connection to database established");
 
-      // Fetch all asins
-      const asins: string[] = await amazonProductRepository.getAsins();
-      console.log(`Retreived ${asins.length} ASINs`);
-
       const taskManager = new TaskManager();
-      taskManager.createTasks(asins);
+      await taskManager.createTasks();
       taskManager.startTasks();
 
       const bot = new TelegramBot(taskManager);
@@ -35,6 +30,8 @@ export default class App {
       amazonProductAnalyzer.start();
 
       bot.launch();
+
+      console.log("Running...");
     } catch (error) {
       console.error(error);
     }

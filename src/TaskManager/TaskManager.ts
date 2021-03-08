@@ -8,6 +8,7 @@ import Task from "../PaapiTask";
 import Paapi from "../Paapi";
 import PaapiCredentials from "../PaapiCredentials";
 import { TaskStatus } from "../PaapiTask/Status";
+import amazonProductRepository from "../repositories/AmazonProductRepository";
 
 export default class SchedulerManager {
   private paapiCredentialsAsList: PaapiCredentials[];
@@ -19,7 +20,10 @@ export default class SchedulerManager {
     this.paapiScheduler = new ToadScheduler();
   }
 
-  createTasks(asins: string[]) {
+  async createTasks() {
+    // Fetch all asins
+    const asins: string[] = await amazonProductRepository.getAsins();
+
     const queue = new Queue("parse-asins", {
       connection: {
         host: config.get("redis.host"),
