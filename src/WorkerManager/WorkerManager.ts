@@ -28,30 +28,36 @@ class WorkerManager {
   amazonComparison = async (job) => {
     let isNewProduct = false;
     const amazonRawItem: Item = job.data;
-    /*
-     * console.log(`[${amazonRawItem.ASIN}] ${amazonRawItem.Offers.Listings[0].Price.Amount}`);
-     * console.log(amazonRawItem.DetailPageURL);
-     * console.log(amazonRawItem.Offers?.Listings);
-     * console.log("\n");
-     *
-     */
 
     // Retreive item saved in the database
     const savedItem = await amazonProductRepository.findOne(amazonRawItem.ASIN);
-    let price, warehousePrice;
+    let price: number, warehousePrice: number;
 
-    // console.log(`${savedItem.asin}: ${savedItem.price} => ${price} `);
     if (savedItem.iterations != 0) {
+      const listingPrice = amazonRawItem.Offers?.Listings[0].Price?.Amount;
+      const seller = amazonRawItem.Offers?.Listings[0].MerchantInfo?.Name;
       const summaries: Summary[] = amazonRawItem.Offers?.Summaries || [];
-      summaries.forEach((summary) => {
+
+      if (listingPrice) {
+        this.comparePrice(savedItem, listingPrice, savedItem.price, "New", seller);
+        price = listingPrice;
+      }
+      const usedSummary = summaries.find((summary) => summary.Condition?.Value === "Used");
+      if (usedSummary) {
+        this.comparePrice(savedItem, usedSummary.LowestPrice.Amount, savedItem.warehousePrice, "Used");
+        warehousePrice = usedSummary.LowestPrice.Amount;
+      }
+
+      /* summaries.forEach((summary) => {
         if (summary.Condition?.Value === "New") {
+          console.log(`Prezzo: ${listingPrice} (${summary.LowestPrice.Amount}) -> Seller: ${seller}`);
           this.comparePrice(savedItem, summary.LowestPrice.Amount, savedItem.price, "New");
           price = summary.LowestPrice.Amount;
         } else if (summary.Condition?.Value === "Used") {
           this.comparePrice(savedItem, summary.LowestPrice.Amount, savedItem.warehousePrice, "Used");
           warehousePrice = summary.LowestPrice.Amount;
         }
-      });
+      }); */
     } else {
       isNewProduct = true;
     }
@@ -71,7 +77,7 @@ class WorkerManager {
     amazonProductRepository.save(savedItem);
   };
 
-  comparePrice = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string) => {
+  comparePrice = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string = null) => {
     // console.log(`${oldPrice} => ${price}`);
     // Product is available again
     if (!oldPrice) {
@@ -82,7 +88,7 @@ class WorkerManager {
     if (price < oldPrice) {
       const diff = percentageDiff(price, oldPrice);
       if (diff > threshold) {
-        this.bot.sendMessage("Possibile offerta\n\n" + defaultMessage(savedItem, price, oldPrice, condition, diff));
+        this.bot.sendMessage("Possibile offerta\n\n" + defaultMessage(savedItem, price, oldPrice, condition, diff, sellerName));
         console.log(`Ribasso ${savedItem.asin} ${condition}: ${diff} - ${oldPrice} => ${price}`);
       }
     }
