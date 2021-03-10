@@ -27,6 +27,12 @@ class AmazonProductRepository {
     const amazonProductRepository = getRepository(AmazonProduct);
     return await amazonProductRepository.findOne(asin);
   }
+
+  async addAsinToDB(asin: string) {
+    const newAmazonProduct = new AmazonProduct();
+    newAmazonProduct.asin = asin;
+    await this.save(newAmazonProduct);
+  }
 }
 
 export default new AmazonProductRepository();

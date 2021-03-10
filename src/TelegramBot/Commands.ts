@@ -1,5 +1,6 @@
-import { Context } from "telegraf";
+import StatefulContext from "./StatefulContext";
 import TaskManager from "../TaskManager";
+import amazonProductRepository from "../repositories/AmazonProductRepository";
 
 export class Commands {
   private taskManager: TaskManager;
@@ -8,7 +9,7 @@ export class Commands {
   }
 
   // Use arrow functions to bind "this"
-  status = (ctx: Context) => {
+  status = (ctx) => {
     const status = this.taskManager.getStatus();
     let msg = "";
     status.forEach((s) => {
@@ -19,7 +20,7 @@ export class Commands {
     ctx.replyWithHTML(msg);
   };
 
-  errors = (ctx: Context) => {
+  errors = (ctx) => {
     const errors = this.taskManager.getErrors();
     let msg = "";
     errors.forEach((errorsArray) => {
@@ -30,5 +31,16 @@ export class Commands {
     if (msg.length > 0) {
       ctx.replyWithHTML(msg);
     } else ctx.reply("Nessun errore riscontrato");
+  };
+
+  addAsins = async (ctx) => {
+    try {
+      const args: string[] = ctx.state.command.args.filter((asin) => asin.toUpperCase().startsWith("B") && asin.length === 10);
+      const promises = args.map((asin) => amazonProductRepository.addAsinToDB(asin));
+      await Promise.all(promises);
+      ctx.replyWithHTML("Ok");
+    } catch (error) {
+      ctx.replyWithHTML(error.message);
+    }
   };
 }

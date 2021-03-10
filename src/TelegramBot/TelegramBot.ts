@@ -1,7 +1,8 @@
-import { Context, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
 import TaskManager from "../TaskManager";
 import * as config from "config";
 import { Commands } from "./Commands";
+import { setupMiddlewares } from "./Middleware";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
 import { amazonProductInfoMessage } from "../TelegramBot/MessageBuilder";
 
@@ -19,12 +20,18 @@ export default class TelegramBot {
   }
 
   private setup() {
+    setupMiddlewares(this.instance);
     this.instance.command("status", this.commands.status);
     this.instance.command("errors", this.commands.errors);
+    this.instance.command("asin", this.commands.addAsins);
+
+    // Parse asins sent in chat
     this.instance.on("text", async (ctx) => {
       if (ctx.message.text.length === 10 && ctx.message.text.toUpperCase().startsWith("B")) {
         const savedItem = await amazonProductRepository.findOne(ctx.message.text.toUpperCase());
-        this.sendMessage(amazonProductInfoMessage(savedItem));
+        if (savedItem) {
+          this.sendMessage(amazonProductInfoMessage(savedItem));
+        }
       }
     });
   }
