@@ -1,6 +1,9 @@
-import StatefulContext from "./StatefulContext";
 import TaskManager from "../TaskManager";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
+import { Context } from "telegraf";
+import Paapi from "../Paapi";
+import * as config from "config";
+import PaapiCredentials from "../PaapiCredentials";
 
 export class Commands {
   private taskManager: TaskManager;
@@ -41,6 +44,41 @@ export class Commands {
       ctx.replyWithHTML("Ok");
     } catch (error) {
       ctx.replyWithHTML(error.message);
+    }
+  };
+
+  paapi = async (ctx: Context) => {
+    const paapiCredentials: PaapiCredentials = config.get("paapi_credentials")[0];
+    const paapiTest = new Paapi(paapiCredentials);
+    const args: string[] = ctx.state.command.args.filter((asin) => asin.toUpperCase().startsWith("B") && asin.length === 10);
+    if (args.length > 0) {
+      // Get only first Asin
+      const asin = args[0];
+      const result = await paapiTest.getItems([asin]);
+      if (result?.ItemsResult?.Items[0]?.Offers?.Listings[0]) {
+        // there is a listing
+        let summaryPrice, summaryWarehousePrice;
+        const price = result.ItemsResult.Items[0].Offers.Listings[0].Price?.Amount;
+        const seller = result.ItemsResult.Items[0].Offers.Listings[0].MerchantInfo.Name;
+
+        const summaries = result.ItemsResult.Items[0].Offers?.Summaries || [];
+        summaries.forEach((summary) => {
+          if (summary.Condition?.Value === "New") {
+            summaryPrice = summary.LowestPrice.Amount;
+          } else if (summary.Condition?.Value === "Used") {
+            summaryWarehousePrice = summary.LowestPrice.Amount;
+          }
+        });
+        ctx.replyWithHTML(
+          `Prezzo: <i>${price || "N/A"}</i>\n\nSeller: ${seller}\nPrezzo Summaries (Nuovo): <i>${
+            summaryPrice || "N/A"
+          }</i>\nPrezzo Summaries (Usato): <i>${summaryWarehousePrice || "N/A"}</i>`
+        );
+      } else {
+        ctx.reply("Non è stato possibile ottenere una risposta da Amazon");
+      }
+    } else {
+      ctx.reply("Nessun asin trovato");
     }
   };
 }
