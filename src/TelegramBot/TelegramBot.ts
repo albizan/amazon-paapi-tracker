@@ -24,6 +24,7 @@ export default class TelegramBot {
     this.instance.command("status", this.commands.status);
     this.instance.command("errors", this.commands.errors);
     this.instance.command("asin", this.commands.addAsins);
+    this.instance.command("paapi", this.commands.paapi);
 
     // Parse asins sent in chat
     this.instance.on("text", async (ctx) => {
