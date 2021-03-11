@@ -22,6 +22,8 @@ export default class TelegramBot {
   private setup() {
     setupMiddlewares(this.instance);
     this.instance.command(["cmd", "command", "commands"], this.commands.listCommands);
+    this.instance.command("stop", this.commands.stop);
+    this.instance.command("restart", this.commands.restart);
     this.instance.command("status", this.commands.status);
     this.instance.command("errors", this.commands.errors);
     this.instance.command("add", this.commands.addAsins);
