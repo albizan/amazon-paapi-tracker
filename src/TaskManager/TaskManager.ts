@@ -35,6 +35,8 @@ export default class SchedulerManager {
     this.tasks = tempChunkedAsins.map((asins, index) => {
       return new Task(asins, this.paapiCredentialsAsList[index].delay, new Paapi(this.paapiCredentialsAsList[index]), queue);
     });
+
+    return asins.length;
   }
 
   startTasks() {
@@ -43,10 +45,16 @@ export default class SchedulerManager {
 
   stopTasks() {
     this.paapiScheduler.stop();
+    this.tasks = null;
+    this.paapiScheduler = new ToadScheduler();
   }
 
   getStatus(): TaskStatus[] {
-    return this.tasks.map((task) => task.getStatus());
+    if (this.tasks) {
+      return this.tasks.map((task) => task.getStatus());
+    } else {
+      throw new Error("Nessun task attivo");
+    }
   }
 
   getErrors(): string[][] {
