@@ -88,11 +88,12 @@ class WorkerManager {
 
       return;
     }
+    // Price decreased
     if (price < oldPrice) {
       const diff = percentageDiff(price, oldPrice);
       if (diff > threshold) {
         try {
-          this.bot.sendMessage("Possibile offerta\n\n" + discountMessage(savedItem, price, oldPrice, condition, diff, sellerName));
+          this.bot.sendMessage(discountMessage(savedItem, price, oldPrice, condition, diff, sellerName));
         } catch (error) {
           console.error("Impossibile inviare notifica telegram");
         }
