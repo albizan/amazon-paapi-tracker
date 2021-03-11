@@ -3,29 +3,36 @@ import { AmazonProduct } from "../entities/AmazonProduct";
 export const discountMessage = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, diff: number = 0, seller = "N/A") => {
   return `
     <b>ABBASSAMENTO DI PREZZO</b>\n
-    <a href="${savedItem.image}">${savedItem.title}</a>\n
+    \n<a href="${savedItem.image}">${savedItem.title}</a>
     \nAsin: <code>${savedItem.asin}</code>
     \nCondizione: ${condition}
-    \nPrezzo: ${oldPrice}€ => ${price}€
+    \nPrezzo: <i>${oldPrice}€ => ${price}€</i>
     \nSconto: ${diff.toFixed(2)}%
-    \nVenditore: ${seller}`;
+    \nVenditore: ${seller}
+    \n<a href="${savedItem.url}">Premi per aprire amazon</a>`;
 };
 
 export const availableAgainMessage = (savedItem: AmazonProduct, price: number, condition: string, seller = "N/A") => {
   return `
     <b>NUOVAMENTE DISPONIBILE</b>\n
-    <a href="${savedItem.image}">${savedItem.title}</a>\n
+    \n<a href="${savedItem.image}">${savedItem.title}</a>
     \nAsin: <code>${savedItem.asin}</code>
     \nCondizione: ${condition}
-    \nVenditore: ${seller}`;
+    \nPrezzo: <i>${price}€</i>
+    \nVenditore: ${seller}
+    \n<a href="${savedItem.url}">Premi per aprire amazon</a>`;
 };
 
 export const amazonProductInfoMessage = (item: AmazonProduct): string => {
+  const price = item.price ? item.price + "€" : "N/A";
+  const warehousePrice = item.warehousePrice ? item.warehousePrice + "€" : "N/A";
   return `
-    <a href="${item.url}">${item.title}</a>\n
+    <b>INFORMAZIONI PRODOTTO</b>\n
+    \n<a href="${item.image}">${item.title}</a>
     \nAsin: <code>${item.asin}</code>
-    \nNuovo: <i>${item.price}€</i>
-    \nUsato: ${item.warehousePrice || "N/A"}
+    \nPrezzo: <i>${price}</i>
+    \nUsato: <i>${warehousePrice}</i>
     \nVisite: ${item.iterations || 0}
-    \nUltima visita: ${item.visitedAt || "N/A"}`;
+    \nUltima visita: ${item.visitedAt || "N/A"}
+    \n<a href="${item.url}">Premi per aprire amazon</a>`;
 };
