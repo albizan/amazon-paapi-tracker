@@ -70,7 +70,6 @@ class WorkerManager {
       savedItem.title = amazonRawItem.ItemInfo?.Title?.DisplayValue;
       savedItem.url = amazonRawItem.DetailPageURL;
       savedItem.image = amazonRawItem.Images?.Primary?.Large.URL;
-      console.log("New entry: " + savedItem.title);
     }
     savedItem.price = price;
     savedItem.warehousePrice = warehousePrice;
