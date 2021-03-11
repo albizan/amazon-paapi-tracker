@@ -47,6 +47,20 @@ export class Commands {
     }
   };
 
+  deleteAsins = async (ctx) => {
+    try {
+      const asins: string[] = ctx.state.command.args.filter((asin) => asin.toUpperCase().startsWith("B") && asin.length === 10);
+      if (asins.length > 0) {
+        await amazonProductRepository.deleteAsins(asins);
+        ctx.replyWithHTML("Ok");
+      } else {
+        ctx.reply("Nessun ASIN trovato");
+      }
+    } catch (error) {
+      ctx.replyWithHTML(error.message);
+    }
+  };
+
   paapi = async (ctx: Context) => {
     const paapiCredentials: PaapiCredentials = config.get("paapi_credentials")[0];
     const paapiTest = new Paapi(paapiCredentials);
@@ -75,7 +89,7 @@ export class Commands {
           }</i>\nPrezzo Summaries (Usato): <i>${summaryWarehousePrice || "N/A"}</i>`
         );
       } else {
-        ctx.reply("Non è stato possibile ottenere una risposta da Amazon");
+        ctx.reply("Non è stato possibile ottenere una risposta 'con offers' da Amazon");
       }
     } else {
       ctx.reply("Nessun asin trovato");
