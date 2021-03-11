@@ -33,6 +33,15 @@ class AmazonProductRepository {
     newAmazonProduct.asin = asin;
     await this.save(newAmazonProduct);
   }
+
+  async deleteAsins(asins: string[]) {
+    try {
+      const amazonProductRepository = getRepository(AmazonProduct);
+      await amazonProductRepository.delete(asins);
+    } catch (error) {
+      throw new Error("Cannot delete asins from DB");
+    }
+  }
 }
 
 export default new AmazonProductRepository();
