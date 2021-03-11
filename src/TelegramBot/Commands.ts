@@ -15,18 +15,44 @@ export class Commands {
 
   listCommands = (ctx) => {
     ctx.replyWithHTML(
-      "<pre><code>&#8226; cmd: mostra i comandi\n&#8226; status: ottieni stato dei task\n&#8226; errors: mostra gli errori dei task\n&#8226; add: aggiungi uno o piu asin\n&#8226; delete: rimuovi uno o piu asin\n&#8226; paapi: interroga DB Amazon\n</code></pre>"
+      "<pre><code>&#8226; cmd: mostra i comandi\n&#8226; stop: stoppa lo scheduler e i task\n&#8226; status: ottieni stato dei task\n&#8226; errors: mostra gli errori dei task\n&#8226; add: aggiungi uno o piu asin\n&#8226; delete: rimuovi uno o piu asin\n&#8226; paapi: interroga DB Amazon\n</code></pre>"
     );
   };
+
+  stop = async (ctx) => {
+    try {
+      this.taskManager.stopTasks();
+      ctx.reply(`Scheduler azzerato, task stoppati correttamente`);
+    } catch (error) {
+      ctx.reply(error.message);
+    }
+  };
+
+  restart = async (ctx) => {
+    try {
+      this.taskManager.stopTasks();
+      const asinAmount = await this.taskManager.createTasks();
+      this.taskManager.startTasks();
+
+      ctx.reply(`Task rigenerati corretamente, ${asinAmount} asin caricati`);
+    } catch (error) {
+      ctx.reply(error.message);
+    }
+  };
+
   status = (ctx) => {
-    const status = this.taskManager.getStatus();
-    let msg = "";
-    status.forEach((s) => {
-      msg += `<b>Tag:</b> ${s.tag}\n<b>Asin:</b> ${s.asinAmount}\n<b>Avanzamento:</b> ${((100 * s.index) / s.chunks).toFixed(
-        2
-      )}%\n<b>Ultimo ASIN:</b> <code>${s.latestRequestedAsin}</code>\n<b>Fine ultima iterazione:</b> ${s.latestIteration || "N/A"}\n\n`;
-    });
-    ctx.replyWithHTML(msg);
+    try {
+      const status = this.taskManager.getStatus();
+      let msg = "";
+      status.forEach((s) => {
+        msg += `<b>Tag:</b> ${s.tag}\n<b>Asin:</b> ${s.asinAmount}\n<b>Avanzamento:</b> ${((100 * s.index) / s.chunks).toFixed(
+          2
+        )}%\n<b>Ultimo ASIN:</b> <code>${s.latestRequestedAsin}</code>\n<b>Fine ultima iterazione:</b> ${s.latestIteration || "N/A"}\n\n`;
+      });
+      ctx.replyWithHTML(msg);
+    } catch (error) {
+      ctx.reply(error.message);
+    }
   };
 
   errors = (ctx) => {
