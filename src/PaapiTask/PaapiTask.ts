@@ -8,6 +8,7 @@ import { TaskStatus } from "./Status";
 
 export default class PaapiTask {
   private chunks: string[][];
+  private asinAmount: number;
   private index: number;
   private delay: number;
   private paapi: Paapi;
@@ -19,6 +20,7 @@ export default class PaapiTask {
   constructor(asins: string[], delay: number, paapi: Paapi, queue: Queue) {
     // I can send up to 10 asins in a request
     this.chunks = chunk(asins, 10);
+    this.asinAmount = asins.length;
     this.index = 0;
     this.delay = delay;
     this.paapi = paapi;
@@ -39,6 +41,7 @@ export default class PaapiTask {
     return {
       tag: this.paapi.getTag(),
       chunks: this.chunks.length,
+      asinAmount: this.asinAmount,
       index: this.index,
       latestIteration: this.latestIteration,
       latestRequestedAsin: this.latestRequestedAsin,

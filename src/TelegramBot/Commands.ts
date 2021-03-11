@@ -22,9 +22,9 @@ export class Commands {
     const status = this.taskManager.getStatus();
     let msg = "";
     status.forEach((s) => {
-      msg += `<b>Tag:</b> ${s.tag}\n<b>Avanzamento:</b> ${((100 * s.index) / s.chunks).toFixed(2)}%\n<b>Ultimo ASIN:</b> <code>${
-        s.latestRequestedAsin
-      }</code>\n<b>Fine ultima iterazione:</b> ${s.latestIteration || "N/A"}\n\n`;
+      msg += `<b>Tag:</b> ${s.tag}\n<b>Asin:</b> ${s.asinAmount}\n<b>Avanzamento:</b> ${((100 * s.index) / s.chunks).toFixed(
+        2
+      )}%\n<b>Ultimo ASIN:</b> <code>${s.latestRequestedAsin}</code>\n<b>Fine ultima iterazione:</b> ${s.latestIteration || "N/A"}\n\n`;
     });
     ctx.replyWithHTML(msg);
   };
