@@ -31,7 +31,7 @@ export const amazonProductInfoMessage = (item: AmazonProduct): string => {
     \n<a href="${item.image}">${item.title}</a>
     \nAsin: <code>${item.asin}</code>
     \nPrezzo: <i>${price}</i>
-    \nUsato: <i>${warehousePrice}</i>
+    \nPrezzo usato: <i>${warehousePrice}</i>
     \nVisite: ${item.iterations || 0}
     \nUltima visita: ${item.visitedAt || "N/A"}
     \n<a href="${item.url}">Premi per aprire amazon</a>`;
