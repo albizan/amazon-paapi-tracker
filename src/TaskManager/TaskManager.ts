@@ -41,6 +41,10 @@ export default class SchedulerManager {
     this.tasks.forEach((task) => this.paapiScheduler.addSimpleIntervalJob(task.getJob()));
   }
 
+  stopTasks() {
+    this.paapiScheduler.stop();
+  }
+
   getStatus(): TaskStatus[] {
     return this.tasks.map((task) => task.getStatus());
   }
