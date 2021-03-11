@@ -23,7 +23,8 @@ export default class TelegramBot {
     setupMiddlewares(this.instance);
     this.instance.command("status", this.commands.status);
     this.instance.command("errors", this.commands.errors);
-    this.instance.command("asin", this.commands.addAsins);
+    this.instance.command("add", this.commands.addAsins);
+    this.instance.command("delete", this.commands.deleteAsins);
     this.instance.command("paapi", this.commands.paapi);
 
     // Parse asins sent in chat
