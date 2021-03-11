@@ -32,7 +32,7 @@ export default class Paapi {
 
   private generatePayload(asins: string[]): GetItemsPayload {
     return {
-      Condition: "Any",
+      Condition: "New",
       ItemIdType: "ASIN",
       ItemIds: asins,
       OfferCount: 1,
