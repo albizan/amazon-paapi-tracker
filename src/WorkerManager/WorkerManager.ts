@@ -5,7 +5,7 @@ import { AmazonProduct } from "../entities/AmazonProduct";
 import { percentageDiff } from "../utils";
 import * as config from "config";
 import { Worker } from "bullmq";
-import { defaultMessage } from "../TelegramBot/MessageBuilder";
+import { availableAgainMessage, discountMessage } from "../TelegramBot/MessageBuilder";
 import * as dayjs from "dayjs";
 import "dayjs/locale/it"; // import locale
 
@@ -77,19 +77,25 @@ class WorkerManager {
     amazonProductRepository.save(savedItem);
   };
 
-  comparePrice = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string = null) => {
-    // console.log(`${oldPrice} => ${price}`);
+  comparePrice = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName?: string) => {
     // Product is available again
     if (!oldPrice) {
-      this.bot.sendMessage("Di nuovo disponibile\n\n" + defaultMessage(savedItem, price, oldPrice, condition));
-      console.log("Di nuovo disponibile " + savedItem.asin);
+      try {
+        this.bot.sendMessage(availableAgainMessage(savedItem, price, condition, sellerName));
+      } catch (error) {
+        console.error("Impossibile inviare notifica telegram");
+      }
+
       return;
     }
     if (price < oldPrice) {
       const diff = percentageDiff(price, oldPrice);
       if (diff > threshold) {
-        this.bot.sendMessage("Possibile offerta\n\n" + defaultMessage(savedItem, price, oldPrice, condition, diff, sellerName));
-        console.log(`Ribasso ${savedItem.asin} ${condition}: ${diff} - ${oldPrice} => ${price}`);
+        try {
+          this.bot.sendMessage("Possibile offerta\n\n" + discountMessage(savedItem, price, oldPrice, condition, diff, sellerName));
+        } catch (error) {
+          console.error("Impossibile inviare notifica telegram");
+        }
       }
     }
   };
