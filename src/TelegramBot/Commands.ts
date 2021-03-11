@@ -12,6 +12,12 @@ export class Commands {
   }
 
   // Use arrow functions to bind "this"
+
+  listCommands = (ctx) => {
+    ctx.replyWithHTML(
+      "<pre><code>&#8226; cmd: mostra i comandi\n&#8226; status: ottieni stato dei task\n&#8226; errors: mostra gli errori dei task\n&#8226; add: aggiungi uno o piu asin\n&#8226; delete: rimuovi uno o piu asin\n&#8226; paapi: interroga DB Amazon\n</code></pre>"
+    );
+  };
   status = (ctx) => {
     const status = this.taskManager.getStatus();
     let msg = "";
