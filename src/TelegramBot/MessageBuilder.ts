@@ -3,7 +3,7 @@ import { AmazonProduct } from "../entities/AmazonProduct";
 export const discountMessage = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, diff: number = 0, seller = "N/A") => {
   return `
     <a href='${savedItem.image}'>&#8204;</a>
-    <b>ABBASSAMENTO DI PREZZO</b>\n
+    \n<b>ABBASSAMENTO DI PREZZO</b>\n
     \n${savedItem.title}
     \nAsin: <code>${savedItem.asin}</code>
     \nCondizione: ${condition}
@@ -16,7 +16,7 @@ export const discountMessage = (savedItem: AmazonProduct, price: number, oldPric
 export const availableAgainMessage = (savedItem: AmazonProduct, price: number, condition: string, seller = "N/A") => {
   return `
     <a href='${savedItem.image}'>&#8204;</a>
-    <b>NUOVAMENTE DISPONIBILE</b>\n
+    \n<b>NUOVAMENTE DISPONIBILE</b>\n
     \n${savedItem.title}
     \nAsin: <code>${savedItem.asin}</code>
     \nCondizione: ${condition}
@@ -30,7 +30,7 @@ export const amazonProductInfoMessage = (item: AmazonProduct): string => {
   const warehousePrice = item.warehousePrice ? item.warehousePrice + "€" : "N/A";
   return `
     <a href='${item.image}'>&#8204;</a>
-    <b>INFORMAZIONI PRODOTTO</b>\n
+    \n<b>INFORMAZIONI PRODOTTO</b>\n
     \n${item.title}
     \nAsin: <code>${item.asin}</code>
     \nPrezzo: <i>${price}</i>
@@ -38,4 +38,16 @@ export const amazonProductInfoMessage = (item: AmazonProduct): string => {
     \nVisite: ${item.iterations || 0}
     \nUltima visita: ${item.visitedAt || "N/A"}
     \n<a href="${item.url}">Premi per aprire amazon</a>`;
+};
+
+export const createItemLink = (asin: string) => {
+  return `https://www.amazon.it/dp/${asin}?tag=wasabe-21`;
+};
+
+export const createListingLink = (asin: string) => {
+  return `https://www.amazon.it/gp/offer-listing/${asin}?tag=wasabe-21`;
+};
+
+export const createKeepaLink = (asin: string) => {
+  return `https://keepa.com/#!product/8-${asin}`;
 };
