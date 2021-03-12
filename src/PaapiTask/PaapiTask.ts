@@ -3,7 +3,7 @@ import { Queue } from "bullmq";
 import * as dayjs from "dayjs";
 import "dayjs/locale/it"; // import locale
 import { chunk } from "../utils";
-import Paapi from "../Paapi";
+import Paapi from "../apis/amazon";
 import { TaskStatus } from "./Status";
 
 export default class PaapiTask {

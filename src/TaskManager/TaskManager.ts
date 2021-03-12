@@ -5,7 +5,7 @@ import * as config from "config";
 import { ToadScheduler } from "toad-scheduler";
 import { Queue } from "bullmq";
 import Task from "../PaapiTask";
-import Paapi from "../Paapi";
+import Paapi from "../apis/amazon";
 import PaapiCredentials from "../PaapiCredentials";
 import { TaskStatus } from "../PaapiTask/Status";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
