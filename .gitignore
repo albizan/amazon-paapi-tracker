@@ -3,3 +3,4 @@
 /build/
 err.log
 out.log
+.env
