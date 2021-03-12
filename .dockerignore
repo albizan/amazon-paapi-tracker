@@ -1,0 +1,10 @@
+.dockerignore
+node_modules
+build
+/pg-data/
+err.log
+out.log
+config_exampkle
+Dockerfile
+.git
+.gitignore
