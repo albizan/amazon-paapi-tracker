@@ -9,7 +9,7 @@ import { availableAgainMessage, discountMessage } from "../TelegramBot/MessageBu
 import * as dayjs from "dayjs";
 import "dayjs/locale/it"; // import locale
 
-const threshold = config.get("tracker.deal_threshold");
+const threshold = parseInt(process.env.DEFAULT_THRESHOLD);
 
 class WorkerManager {
   private worker: Worker;
@@ -18,9 +18,9 @@ class WorkerManager {
   start() {
     this.worker = new Worker("parse-asins", this.amazonComparison, {
       connection: {
-        host: config.get("redis.host"),
-        port: config.get("redis.port"),
-        password: config.get("redis.password"),
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
       },
     });
   }

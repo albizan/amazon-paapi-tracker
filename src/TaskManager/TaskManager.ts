@@ -26,9 +26,9 @@ export default class SchedulerManager {
 
     const queue = new Queue("parse-asins", {
       connection: {
-        host: config.get("redis.host"),
-        port: config.get("redis.port"),
-        password: config.get("redis.password"),
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
       },
     });
     const tempChunkedAsins = this.balanceAsinsInTasks(asins);

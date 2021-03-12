@@ -6,8 +6,8 @@ import { setupMiddlewares } from "./Middleware";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
 import { amazonProductInfoMessage } from "../TelegramBot/MessageBuilder";
 
-const token = config.get("bot.token");
-const logChannel = config.get("bot.log_channel_id");
+const token = process.env.BOT_TOKEN;
+const logChannel = process.env.BOT_OUT_CHANNEL;
 
 export default class TelegramBot {
   private instance: Telegraf;

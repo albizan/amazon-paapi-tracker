@@ -2,12 +2,11 @@ import "reflect-metadata";
 import { createConnection, ConnectionOptions } from "typeorm";
 import WorkerManager from "./WorkerManager";
 import TaskManager from "./TaskManager";
-import * as config from "config";
 import TelegramBot from "./TelegramBot";
 
 const connectionOptions: ConnectionOptions = {
   type: "postgres",
-  url: config.get("db_url"),
+  url: process.env.DB_URL,
   synchronize: true,
   entities: [__dirname + "/entities/*{.ts,.js}"],
 };
