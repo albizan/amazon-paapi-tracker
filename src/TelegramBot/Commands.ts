@@ -1,7 +1,7 @@
 import TaskManager from "../TaskManager";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
 import { Context } from "telegraf";
-import Paapi from "../Paapi";
+import Paapi from "../apis/amazon";
 import * as config from "config";
 import PaapiCredentials from "../PaapiCredentials";
 
