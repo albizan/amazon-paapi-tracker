@@ -101,28 +101,31 @@ export class Commands {
       // Get only first Asin
       const asin = args[0];
       const result = await paapiTest.getItems([asin]);
+
+      let summaryPrice, summaryWarehousePrice, listingPrice, seller;
+
       if (result?.ItemsResult?.Items[0]?.Offers?.Listings[0]) {
         // there is a listing
-        let summaryPrice, summaryWarehousePrice;
-        const price = result.ItemsResult.Items[0].Offers.Listings[0].Price?.Amount;
-        const seller = result.ItemsResult.Items[0].Offers.Listings[0].MerchantInfo.Name;
+        listingPrice = result.ItemsResult.Items[0].Offers.Listings[0].Price?.Amount + "€";
+        seller = result.ItemsResult.Items[0].Offers.Listings[0].MerchantInfo.Name;
+      }
 
-        const summaries = result.ItemsResult.Items[0].Offers?.Summaries || [];
-        summaries.forEach((summary) => {
+      if (result.ItemsResult.Items[0].Offers?.Summaries) {
+        result.ItemsResult.Items[0].Offers?.Summaries.forEach((summary) => {
           if (summary.Condition?.Value === "New") {
-            summaryPrice = summary.LowestPrice.Amount;
+            summaryPrice = summary.LowestPrice.Amount + "€";
           } else if (summary.Condition?.Value === "Used") {
-            summaryWarehousePrice = summary.LowestPrice.Amount;
+            summaryWarehousePrice = summary.LowestPrice.Amount + "€";
           }
         });
-        ctx.replyWithHTML(
-          `Prezzo: <i>${price || "N/A"}</i>\n\nSeller: ${seller}\nPrezzo Summaries (Nuovo): <i>${
-            summaryPrice || "N/A"
-          }</i>\nPrezzo Summaries (Usato): <i>${summaryWarehousePrice || "N/A"}</i>`
-        );
-      } else {
-        ctx.reply("Non è stato possibile ottenere una risposta 'con offers' da Amazon");
       }
+
+      ctx.replyWithHTML(
+        `<b>${result.ItemsResult?.Items[0]?.ItemInfo?.Title?.DisplayValue || "N/A"}</b>
+        \nListing:\nPrezzo (Nuovo): <i>${listingPrice || "N/A"}</i>\nSeller: ${seller || "N/A"}
+        \nSummaries:\nPrezzo (Nuovo): <i>${summaryPrice || "N/A"}</i>\nPrezzo (Usato): <i>${summaryWarehousePrice || "N/A"}</i>
+        \n<a href="${result.ItemsResult?.Items[0]?.DetailPageURL}">Vedi su amazon</a>`
+      );
     } else {
       ctx.reply("Nessun asin trovato");
     }
