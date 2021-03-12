@@ -1,5 +1,5 @@
 import { GetItemsRequest, GetItemsPayload, PartnerType, Host, Region, GetItemsResponse } from "paapi5-typescript-sdk";
-import PaapiCredentials from "../PaapiCredentials";
+import PaapiCredentials from "../../PaapiCredentials";
 import * as dayjs from "dayjs";
 import "dayjs/locale/it"; // import locale
 
