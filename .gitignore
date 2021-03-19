@@ -6,3 +6,4 @@ err.log
 out.log
 .env
 docker-compose.yaml
+dev.yaml
