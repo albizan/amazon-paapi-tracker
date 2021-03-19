@@ -65,7 +65,13 @@ class WorkerManager {
     this.updateAmazonProduct(amazonRawItem, savedItem, isNewProduct, price, warehousePrice);
   };
 
-  updateAmazonProduct = (amazonRawItem: Item, savedItem: AmazonProduct, isNewProduct: boolean, price: number, warehousePrice: number) => {
+  updateAmazonProduct = (
+    amazonRawItem: Item,
+    savedItem: AmazonProduct,
+    isNewProduct: boolean,
+    price: number = null,
+    warehousePrice: number = null
+  ) => {
     if (isNewProduct) {
       savedItem.title = amazonRawItem.ItemInfo?.Title?.DisplayValue;
       savedItem.url = amazonRawItem.DetailPageURL;
