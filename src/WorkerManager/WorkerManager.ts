@@ -42,12 +42,26 @@ class WorkerManager {
     }
 
     if (listingPrice) {
-      this.comparePrice(isNewProduct, savedItem, listingPrice, savedItem.price, "New", seller);
+      const isNotified = this.comparePrice(isNewProduct, savedItem, listingPrice, savedItem.price, "New", seller, savedItem.lastNotifiedNew);
+      if (isNotified) {
+        savedItem.lastNotifiedNew = Date.now();
+      }
       price = listingPrice;
     }
     const usedSummary = summaries.find((summary) => summary.Condition?.Value === "Used");
     if (usedSummary) {
-      this.comparePrice(isNewProduct, savedItem, usedSummary.LowestPrice.Amount, savedItem.warehousePrice, "Used");
+      const isNotified = this.comparePrice(
+        isNewProduct,
+        savedItem,
+        usedSummary.LowestPrice.Amount,
+        savedItem.warehousePrice,
+        "Used",
+        "N/A",
+        savedItem.lastNotifiedWarehouse
+      );
+      if (isNotified) {
+        savedItem.lastNotifiedWarehouse = Date.now();
+      }
       warehousePrice = usedSummary.LowestPrice.Amount;
     }
 
@@ -65,13 +79,7 @@ class WorkerManager {
     this.updateAmazonProduct(amazonRawItem, savedItem, isNewProduct, price, warehousePrice);
   };
 
-  updateAmazonProduct = (
-    amazonRawItem: Item,
-    savedItem: AmazonProduct,
-    isNewProduct: boolean,
-    price: number = null,
-    warehousePrice: number = null
-  ) => {
+  updateAmazonProduct = (amazonRawItem: Item, savedItem: AmazonProduct, isNewProduct: boolean, price: number = null, warehousePrice: number = null) => {
     if (isNewProduct) {
       savedItem.title = amazonRawItem.ItemInfo?.Title?.DisplayValue;
       savedItem.url = amazonRawItem.DetailPageURL;
@@ -80,12 +88,14 @@ class WorkerManager {
     savedItem.price = price;
     savedItem.warehousePrice = warehousePrice;
     savedItem.iterations++;
-    savedItem.visitedAt = dayjs().locale("it").format("HH:mm:ss");
+    savedItem.visitedAt = dayjs().add(1, "hour").locale("it").format("HH:mm:ss");
     amazonProductRepository.save(savedItem);
   };
 
-  comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName?: string) => {
-    if (isnewProduct) {
+  comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0) => {
+    let isNotified: boolean = false;
+
+    if (isnewProduct || Date.now() - timestamp < 1000 * 3600) {
       return;
     }
     // Product is available again
@@ -104,11 +114,14 @@ class WorkerManager {
       if (diff > threshold) {
         try {
           this.bot.sendMessage(discountMessage(savedItem, price, oldPrice, condition, diff, sellerName));
+          isNotified = true;
         } catch (error) {
           console.error("Impossibile inviare notifica telegram");
         }
       }
     }
+
+    return isNotified;
   };
 }
 

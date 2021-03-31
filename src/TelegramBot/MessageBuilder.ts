@@ -28,6 +28,20 @@ export const availableAgainMessage = (savedItem: AmazonProduct, price: number, c
 export const amazonProductInfoMessage = (item: AmazonProduct): string => {
   const price = item.price ? item.price + "€" : "N/A";
   const warehousePrice = item.warehousePrice ? item.warehousePrice + "€" : "N/A";
+  let latestNotification;
+  let latestNotificationWarehouse;
+  if (item.lastNotifiedNew > 0) {
+    const millis = Date.now() - item.lastNotifiedNew;
+    latestNotification = (millis / 1000 / 60).toFixed(0) + " minuti fa";
+  } else {
+    latestNotification = "Nessuna";
+  }
+  if (item.lastNotifiedWarehouse > 0) {
+    const millis = Date.now() - item.lastNotifiedNew;
+    latestNotificationWarehouse = (millis / 1000 / 60).toFixed(0) + " minuti fa";
+  } else {
+    latestNotificationWarehouse = "Nessuna";
+  }
   return `
     <a href='${item.image}'>&#8204;</a>
     \n<b>INFORMAZIONI PRODOTTO</b>\n
@@ -37,6 +51,8 @@ export const amazonProductInfoMessage = (item: AmazonProduct): string => {
     \nPrezzo usato: <i>${warehousePrice}</i>
     \nVisite: ${item.iterations || 0}
     \nUltima visita: ${item.visitedAt || "N/A"}
+    \nNotifica [Nuovo]: ${latestNotification}
+    \nNotifica [Usato]: ${latestNotificationWarehouse}
     \n<a href="${item.url}">Premi per aprire amazon</a>`;
 };
 

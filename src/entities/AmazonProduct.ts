@@ -28,4 +28,10 @@ export class AmazonProduct {
 
   @Column({ default: 0 })
   iterations: number;
+
+  @Column({ default: 0, type: "bigint" })
+  lastNotifiedNew: number;
+
+  @Column({ default: 0, type: "bigint" })
+  lastNotifiedWarehouse: number;
 }
