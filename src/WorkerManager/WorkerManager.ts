@@ -82,7 +82,7 @@ class WorkerManager {
     amazonProductRepository.save(savedItem);
   };
 
-  comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0) => {
+  comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0): boolean => {
     const millisDelay = parseInt(process.env.NOTIFICATION_DELAY) || 3600000; // default is 1 hour = 3600000 millis
     let isNotified: boolean = false;
 
@@ -101,7 +101,7 @@ class WorkerManager {
         console.error("Impossibile inviare notifica telegram, 'nuovamente disponibile'");
       }
 
-      return;
+      return isNotified;
     }
     // Price decreased
     if (price < oldPrice) {
