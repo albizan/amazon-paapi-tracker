@@ -3,7 +3,6 @@ import amazonProductRepository from "../repositories/AmazonProductRepository";
 import { Item, Summary } from "paapi5-typescript-sdk";
 import { AmazonProduct } from "../entities/AmazonProduct";
 import { percentageDiff } from "../utils";
-import * as config from "config";
 import { Worker } from "bullmq";
 import { availableAgainMessage, discountMessage } from "../TelegramBot/MessageBuilder";
 import * as dayjs from "dayjs";
@@ -13,6 +12,8 @@ const threshold = parseInt(process.env.DEFAULT_THRESHOLD);
 
 class WorkerManager {
   private worker: Worker;
+  private threshold = parseInt(process.env.DEFAULT_THRESHOLD);
+
   constructor(private bot: TelegramBot) {}
 
   start() {
@@ -26,21 +27,29 @@ class WorkerManager {
   }
 
   amazonComparison = async (job) => {
-    let isNewProduct = false;
-    const amazonRawItem: Item = job.data;
-
-    // Retreive item saved in the database
-    const savedItem = await amazonProductRepository.findOne(amazonRawItem.ASIN);
+    // Some products may be added recently and they have no data to compare, handle them in a different manner with a isNewProduct flag
+    let isNewProduct: boolean;
     let price: number, warehousePrice: number;
 
+    // Get data from job queue, this is the data that amazon sends back from its private paapi
+    const amazonRawItem: Item = job.data;
+
+    // Retreive item saved in the database, this data needs to be compared to the data from the job queue (amazonRawItem)
+    const savedItem = await amazonProductRepository.findOne(amazonRawItem.ASIN);
+
+    // Get listing price, this price represents the price of the first item listed on amazon webpage, this can be null if there are no items available
     const listingPrice = amazonRawItem.Offers?.Listings[0].Price?.Amount;
+
+    // Get seller's name, this can be null if there are no items available
     const seller = amazonRawItem.Offers?.Listings[0].MerchantInfo?.Name;
-    const summaries: Summary[] = amazonRawItem.Offers?.Summaries || [];
 
-    if (savedItem.iterations === 0) {
-      isNewProduct = true;
-    }
+    // Get used summary object
+    const usedSummary: Summary = amazonRawItem.Offers?.Summaries.find((summary) => summary.Condition?.Value === "Used");
 
+    // If number of iterations is zero, item is in his first visit, handle differently with a flag
+    isNewProduct = savedItem.iterations === 0 ? true : false;
+
+    // If listingPrice is defined, compare with latest price of NEW
     if (listingPrice) {
       const isNotified = this.comparePrice(isNewProduct, savedItem, listingPrice, savedItem.price, "New", seller, savedItem.lastNotifiedNew);
       if (isNotified) {
@@ -48,33 +57,14 @@ class WorkerManager {
       }
       price = listingPrice;
     }
-    const usedSummary = summaries.find((summary) => summary.Condition?.Value === "Used");
+
     if (usedSummary) {
-      const isNotified = this.comparePrice(
-        isNewProduct,
-        savedItem,
-        usedSummary.LowestPrice.Amount,
-        savedItem.warehousePrice,
-        "Used",
-        "N/A",
-        savedItem.lastNotifiedWarehouse
-      );
+      const isNotified = this.comparePrice(isNewProduct, savedItem, usedSummary.LowestPrice.Amount, savedItem.warehousePrice, "Used", "N/A", savedItem.lastNotifiedWarehouse);
       if (isNotified) {
         savedItem.lastNotifiedWarehouse = Date.now();
       }
       warehousePrice = usedSummary.LowestPrice.Amount;
     }
-
-    /* summaries.forEach((summary) => {
-          if (summary.Condition?.Value === "New") {
-            console.log(`Prezzo: ${listingPrice} (${summary.LowestPrice.Amount}) -> Seller: ${seller}`);
-            this.comparePrice(savedItem, summary.LowestPrice.Amount, savedItem.price, "New");
-            price = summary.LowestPrice.Amount;
-          } else if (summary.Condition?.Value === "Used") {
-            this.comparePrice(savedItem, summary.LowestPrice.Amount, savedItem.warehousePrice, "Used");
-            warehousePrice = summary.LowestPrice.Amount;
-          }
-        }); */
 
     this.updateAmazonProduct(amazonRawItem, savedItem, isNewProduct, price, warehousePrice);
   };
@@ -93,17 +83,22 @@ class WorkerManager {
   };
 
   comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0) => {
+    const seconds = 1200; // 20 minutes
     let isNotified: boolean = false;
 
-    if (isnewProduct || Date.now() - timestamp < 1000 * 3600) {
+    // If product is newly added to db, do not compare
+    // If product has been already notified minutes ago, ignore
+    if (isnewProduct || Date.now() - timestamp < 1000 * seconds) {
       return;
     }
+
     // Product is available again
     if (!oldPrice) {
       try {
         this.bot.sendMessage(availableAgainMessage(savedItem, price, condition, sellerName));
+        isNotified = true;
       } catch (error) {
-        console.error("Impossibile inviare notifica telegram");
+        console.error("Impossibile inviare notifica telegram, 'nuovamente disponibile'");
       }
 
       return;
@@ -116,7 +111,7 @@ class WorkerManager {
           this.bot.sendMessage(discountMessage(savedItem, price, oldPrice, condition, diff, sellerName));
           isNotified = true;
         } catch (error) {
-          console.error("Impossibile inviare notifica telegram");
+          console.error("Impossibile inviare notifica telegram, 'prezzo piu basso'");
         }
       }
     }
