@@ -1,9 +1,7 @@
 import { AmazonProduct } from "../entities/AmazonProduct";
 
 export const discountMessage = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, diff: number = 0, seller = "N/A") => {
-  return `
-    <a href='${savedItem.image}'>&#8204;</a>
-    \n<b>ABBASSAMENTO DI PREZZO</b>\n
+  return `<a href='${savedItem.image}'>&#8204;</a><b>${diff.toFixed(2)}% di ribasso</b>\n
     \n${savedItem.title}
     \nAsin: <code>${savedItem.asin}</code>
     \nCondizione: ${condition}
@@ -14,9 +12,7 @@ export const discountMessage = (savedItem: AmazonProduct, price: number, oldPric
 };
 
 export const availableAgainMessage = (savedItem: AmazonProduct, price: number, condition: string, seller = "N/A") => {
-  return `
-    <a href='${savedItem.image}'>&#8204;</a>
-    \n<b>NUOVAMENTE DISPONIBILE</b>\n
+  return `<a href='${savedItem.image}'>&#8204;</a><b>NUOVAMENTE DISPONIBILE</b>\n
     \n${savedItem.title}
     \nAsin: <code>${savedItem.asin}</code>
     \nCondizione: ${condition}
@@ -37,7 +33,7 @@ export const amazonProductInfoMessage = (item: AmazonProduct): string => {
     latestNotification = "Nessuna";
   }
   if (item.lastNotifiedWarehouse > 0) {
-    const millis = Date.now() - item.lastNotifiedNew;
+    const millis = Date.now() - item.lastNotifiedWarehouse;
     latestNotificationWarehouse = (millis / 1000 / 60).toFixed(0) + " minuti fa";
   } else {
     latestNotificationWarehouse = "Nessuna";
