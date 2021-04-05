@@ -78,17 +78,17 @@ class WorkerManager {
     savedItem.price = price;
     savedItem.warehousePrice = warehousePrice;
     savedItem.iterations++;
-    savedItem.visitedAt = dayjs().add(1, "hour").locale("it").format("HH:mm:ss");
+    savedItem.visitedAt = dayjs().add(2, "hour").locale("it").format("HH:mm:ss");
     amazonProductRepository.save(savedItem);
   };
 
   comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0) => {
-    const seconds = 1200; // 20 minutes
+    const millisDelay = parseInt(process.env.NOTIFICATION_DELAY) || 3600000; // default is 1 hour = 3600000 millis
     let isNotified: boolean = false;
 
     // If product is newly added to db, do not compare
     // If product has been already notified minutes ago, ignore
-    if (isnewProduct || Date.now() - timestamp < 1000 * seconds) {
+    if (isnewProduct || Date.now() - timestamp < millisDelay) {
       return;
     }
 
