@@ -63,3 +63,10 @@ export const createListingLink = (asin: string) => {
 export const createKeepaLink = (asin: string) => {
   return `https://keepa.com/#!product/8-${asin}`;
 };
+
+export const channelNotification = (item: AmazonProduct, price: number, sellerName: string, condition: string): string => {
+  return `<a href='${item.image}'>&#8204;</a><b>${item.title}</b>
+  \nCondizione: ${condition}
+  \nPrezzo: <i>${price}€</i>
+  \nVenditore: ${sellerName}`;
+};
