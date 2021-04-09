@@ -1,4 +1,5 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
+import { OfferNotification } from "./OfferNotification";
 
 @Entity()
 export class AmazonProduct {
@@ -34,4 +35,7 @@ export class AmazonProduct {
 
   @Column({ default: 0, type: "bigint" })
   lastNotifiedWarehouse: number;
+
+  @OneToMany(() => OfferNotification, (offerNotification) => offerNotification.product)
+  notifications: OfferNotification[];
 }
