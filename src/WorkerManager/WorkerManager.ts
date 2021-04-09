@@ -108,6 +108,7 @@ class WorkerManager {
         offerNotification.id = "" + message_id;
         offerNotification.price = price;
         offerNotification.type = condition;
+        offerNotification.sellerName = sellerName;
         offerNotification.product = savedItem;
         offerNotificationRepository.save(offerNotification);
         isNotified = true;
