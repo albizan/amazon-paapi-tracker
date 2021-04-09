@@ -1,13 +1,14 @@
-import { Telegraf } from "telegraf";
+import { Markup, Telegraf } from "telegraf";
 import TaskManager from "../TaskManager";
-import * as config from "config";
 import { Commands } from "./Commands";
 import { setupMiddlewares } from "./Middleware";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
-import { amazonProductInfoMessage } from "../TelegramBot/MessageBuilder";
+import offerNotificationRepository from "../repositories/OfferNotificationRepository";
+import { amazonProductInfoMessage, channelNotification } from "../TelegramBot/MessageBuilder";
 
 const token = process.env.BOT_TOKEN;
 const logChannel = process.env.BOT_OUT_CHANNEL;
+const offerChannel = process.env.OFFER_CHANNEL;
 
 export default class TelegramBot {
   private instance: Telegraf;
@@ -39,6 +40,22 @@ export default class TelegramBot {
         }
       }
     });
+
+    this.instance.on("callback_query", async (ctx: any) => {
+      // Using context shortcut
+      ctx.answerCbQuery();
+      if (ctx.callbackQuery.data == "Approva") {
+        const messageId = ctx.callbackQuery.message.message_id;
+        const offer = await offerNotificationRepository.findOne(messageId);
+        // console.log(notification);
+        this.instance.telegram.sendMessage(offerChannel, channelNotification(offer.product, offer.price, offer.sellerName, offer.type), {
+          parse_mode: "HTML",
+          reply_markup: {
+            inline_keyboard: [[Markup.button.url("Apri Amazon", offer.product.url)]],
+          },
+        });
+      }
+    });
   }
 
   launch() {
@@ -50,5 +67,9 @@ export default class TelegramBot {
     this.instance.telegram.sendMessage(logChannel, msg, {
       parse_mode: "HTML",
     });
+  }
+
+  getInstance(): Telegraf {
+    return this.instance;
   }
 }
