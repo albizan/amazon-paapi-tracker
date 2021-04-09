@@ -1,12 +1,15 @@
 import TelegramBot from "../TelegramBot";
+import { Markup } from "telegraf";
 import amazonProductRepository from "../repositories/AmazonProductRepository";
+import offerNotificationRepository from "../repositories/OfferNotificationRepository";
 import { Item, Summary } from "paapi5-typescript-sdk";
 import { AmazonProduct } from "../entities/AmazonProduct";
 import { percentageDiff } from "../utils";
 import { Worker } from "bullmq";
-import { availableAgainMessage, discountMessage } from "../TelegramBot/MessageBuilder";
+import { availableAgainMessage } from "../TelegramBot/MessageBuilder";
 import * as dayjs from "dayjs";
 import "dayjs/locale/it"; // import locale
+import { OfferNotification } from "../entities/OfferNotification";
 
 const threshold = parseInt(process.env.DEFAULT_THRESHOLD);
 
@@ -82,9 +85,9 @@ class WorkerManager {
     amazonProductRepository.save(savedItem);
   };
 
-  comparePrice = (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0): boolean => {
-    const millisDelay = parseInt(process.env.NOTIFICATION_DELAY) || 3600000; // default is 1 hour = 3600000 millis
+  comparePrice = async (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0): Promise<boolean> => {
     let isNotified: boolean = false;
+    const millisDelay = parseInt(process.env.NOTIFICATION_DELAY) || 120000; // default is 1 hour = 3600000 millis
 
     // If product is newly added to db, do not compare
     // If product has been already notified minutes ago, ignore
@@ -95,7 +98,18 @@ class WorkerManager {
     // Product is available again
     if (!oldPrice) {
       try {
-        this.bot.sendMessage(availableAgainMessage(savedItem, price, condition, sellerName));
+        const { message_id } = await this.bot.getInstance().telegram.sendMessage(process.env.BOT_OUT_CHANNEL, availableAgainMessage(savedItem, price, condition, sellerName), {
+          parse_mode: "HTML",
+          reply_markup: {
+            inline_keyboard: [[Markup.button.callback("Approva", "Approva")]],
+          },
+        });
+        const offerNotification = new OfferNotification();
+        offerNotification.id = "" + message_id;
+        offerNotification.price = price;
+        offerNotification.type = condition;
+        offerNotification.product = savedItem;
+        offerNotificationRepository.save(offerNotification);
         isNotified = true;
       } catch (error) {
         console.error("Impossibile inviare notifica telegram, 'nuovamente disponibile'");
@@ -106,9 +120,20 @@ class WorkerManager {
     // Price decreased
     if (price < oldPrice) {
       const diff = percentageDiff(price, oldPrice);
-      if (diff > threshold) {
+      if (diff >= threshold) {
         try {
-          this.bot.sendMessage(discountMessage(savedItem, price, oldPrice, condition, diff, sellerName));
+          const { message_id } = await this.bot.getInstance().telegram.sendMessage(process.env.BOT_OUT_CHANNEL, availableAgainMessage(savedItem, price, condition, sellerName), {
+            parse_mode: "HTML",
+            reply_markup: {
+              inline_keyboard: [[Markup.button.callback("Approva", "Approva")]],
+            },
+          });
+          const offerNotification = new OfferNotification();
+          offerNotification.id = `${message_id}`;
+          offerNotification.price = price;
+          offerNotification.type = condition;
+          offerNotification.product = savedItem;
+          offerNotificationRepository.save(offerNotification);
           isNotified = true;
         } catch (error) {
           console.error("Impossibile inviare notifica telegram, 'prezzo piu basso'");
