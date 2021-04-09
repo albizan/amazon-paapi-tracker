@@ -9,6 +9,9 @@ export class OfferNotification {
   @ManyToOne(() => AmazonProduct, (amazonProduct) => amazonProduct.notifications)
   product: AmazonProduct;
 
+  @Column({ nullable: true })
+  sellerName: string;
+
   @Column()
   type: string;
 
