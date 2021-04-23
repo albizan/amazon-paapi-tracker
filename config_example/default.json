@@ -6,18 +6,5 @@
       "tag": "xxx",
       "delay": 1234
     }
-  ],
-  "tracker": {
-    "deal_threshold": 20
-  },
-  "bot": {
-    "token": "xxx",
-    "log_channel_id": "xxx"
-  },
-  "db_url": "xxx",
-  "redis": {
-    "host": "xxx",
-    "port": 6379,
-    "password": "xxx"
-  }
+  ]
 }
