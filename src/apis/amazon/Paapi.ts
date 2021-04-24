@@ -5,9 +5,11 @@ import "dayjs/locale/it"; // import locale
 
 export default class Paapi {
   private credentials: PaapiCredentials;
+  private errors: Set<string>;
 
   constructor(paapiCredentials: PaapiCredentials) {
     this.credentials = paapiCredentials;
+    this.errors = new Set();
   }
 
   async getItems(asins: string[]): Promise<GetItemsResponse> {
@@ -27,8 +29,19 @@ export default class Paapi {
       return data;
     } catch (error) {
       this.error(error.message);
+      this.errors.add(error.message)
     }
   }
+
+  getTag(): string {
+    return this.credentials.tag;
+  }
+
+  getErrors(): string[] {
+    return Array.from(this.errors);
+  }
+
+  /* PRIVATE METHODS BELOW */
 
   private generatePayload(asins: string[]): GetItemsPayload {
     return {
@@ -40,11 +53,7 @@ export default class Paapi {
     };
   }
 
-  getTag(): string {
-    return this.credentials.tag;
-  }
-
   private error(message) {
-    console.error(`[${dayjs().locale("it").format("HH:mm:ss")}] {Paapi} ${message}`);
+    console.error(`[${dayjs().locale("it").format("HH:mm:ss")}] {${this.getTag()}} ${message}`);
   }
 }
