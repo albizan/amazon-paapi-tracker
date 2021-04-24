@@ -41,6 +41,10 @@ export default class Paapi {
     return Array.from(this.errors);
   }
 
+  flushErrors() {
+    this.errors.clear()
+  }
+
   /* PRIVATE METHODS BELOW */
 
   private generatePayload(asins: string[]): GetItemsPayload {
