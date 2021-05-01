@@ -15,24 +15,31 @@ export default class App {
   async start() {
     try {
       // Connect to database
+      console.log("Connecting to database...");
       await createConnection(connectionOptions);
       console.log("Connection to database established");
 
+      // Create taskmanager and all related tasks
+      console.log("Creating task manager...");
       const taskManager = new TaskManager();
       await taskManager.createTasks();
       taskManager.startTasks();
+      console.log("Task manager created, all tasks started");
 
+      console.log("Creating Telegram BOT...");
       const bot = new TelegramBot(taskManager);
+      console.log("Telegram BOT created");
 
       // Start background jobs on amazon products' queue
+      console.log("Creating job worker...");
       const amazonProductAnalyzer = new WorkerManager(bot);
       amazonProductAnalyzer.start();
+      console.log("Job worker created and started");
 
       bot.launch();
-
-      console.log("Running...");
+      console.log("\nAll system running...");
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   }
 }
