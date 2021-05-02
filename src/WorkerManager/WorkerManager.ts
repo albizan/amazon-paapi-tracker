@@ -7,9 +7,10 @@ import { AmazonProduct } from "../entities/AmazonProduct";
 import { percentageDiff } from "../utils";
 import { Worker } from "bullmq";
 import { availableAgainMessage } from "../TelegramBot/MessageBuilder";
-import * as dayjs from "dayjs";
-import "dayjs/locale/it"; // import locale
 import { OfferNotification } from "../entities/OfferNotification";
+import * as dayjs from "dayjs";
+import { APPROVE } from "../types";
+import "dayjs/locale/it"; // import locale
 
 const threshold = parseInt(process.env.DEFAULT_THRESHOLD);
 
@@ -62,7 +63,15 @@ class WorkerManager {
     }
 
     if (usedSummary) {
-      const isNotified = this.comparePrice(isNewProduct, savedItem, usedSummary.LowestPrice.Amount, savedItem.warehousePrice, "Used", "N/A", savedItem.lastNotifiedWarehouse);
+      const isNotified = this.comparePrice(
+        isNewProduct,
+        savedItem,
+        usedSummary.LowestPrice.Amount,
+        savedItem.warehousePrice,
+        "Used",
+        "N/A",
+        savedItem.lastNotifiedWarehouse
+      );
       if (isNotified) {
         savedItem.lastNotifiedWarehouse = Date.now();
       }
@@ -85,7 +94,15 @@ class WorkerManager {
     amazonProductRepository.save(savedItem);
   };
 
-  comparePrice = async (isnewProduct: boolean, savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, sellerName: string, timestamp: number = 0): Promise<boolean> => {
+  comparePrice = async (
+    isnewProduct: boolean,
+    savedItem: AmazonProduct,
+    price: number,
+    oldPrice: number,
+    condition: string,
+    sellerName: string,
+    timestamp: number = 0
+  ): Promise<boolean> => {
     let isNotified: boolean = false;
     const millisDelay = parseInt(process.env.NOTIFICATION_DELAY) || 120000; // default is 1 hour = 3600000 millis
 
@@ -98,12 +115,14 @@ class WorkerManager {
     // Product is available again
     if (!oldPrice) {
       try {
-        const { message_id } = await this.bot.getInstance().telegram.sendMessage(process.env.BOT_OUT_CHANNEL, availableAgainMessage(savedItem, price, condition, sellerName), {
-          parse_mode: "HTML",
-          reply_markup: {
-            inline_keyboard: [[Markup.button.callback("Approva", "Approva")]],
-          },
-        });
+        const { message_id } = await this.bot
+          .getInstance()
+          .telegram.sendMessage(process.env.BOT_OUT_CHANNEL, availableAgainMessage(savedItem, price, condition, sellerName), {
+            parse_mode: "HTML",
+            reply_markup: {
+              inline_keyboard: [[Markup.button.callback(APPROVE, APPROVE)]],
+            },
+          });
         const offerNotification = new OfferNotification();
         offerNotification.id = "" + message_id;
         offerNotification.price = price;
@@ -123,12 +142,14 @@ class WorkerManager {
       const diff = percentageDiff(price, oldPrice);
       if (diff >= threshold) {
         try {
-          const { message_id } = await this.bot.getInstance().telegram.sendMessage(process.env.BOT_OUT_CHANNEL, availableAgainMessage(savedItem, price, condition, sellerName), {
-            parse_mode: "HTML",
-            reply_markup: {
-              inline_keyboard: [[Markup.button.callback("Approva", "Approva")]],
-            },
-          });
+          const { message_id } = await this.bot
+            .getInstance()
+            .telegram.sendMessage(process.env.BOT_OUT_CHANNEL, availableAgainMessage(savedItem, price, condition, sellerName), {
+              parse_mode: "HTML",
+              reply_markup: {
+                inline_keyboard: [[Markup.button.callback(APPROVE, APPROVE)]],
+              },
+            });
           const offerNotification = new OfferNotification();
           offerNotification.id = `${message_id}`;
           offerNotification.price = price;
