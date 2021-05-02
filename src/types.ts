@@ -1,3 +1,3 @@
 export const APPROVE = "Approva";
-export const NEW = "new";
-export const USED = "used";
+export const NEW = "New";
+export const USED = "Used";
