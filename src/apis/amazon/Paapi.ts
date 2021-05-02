@@ -12,8 +12,8 @@ export default class Paapi {
     this.errors = new Set();
   }
 
-  async getItems(asins: string[]): Promise<GetItemsResponse> {
-    const payload: GetItemsPayload = this.generatePayload(asins);
+  async getItems(asins: string[], condition = "New"): Promise<GetItemsResponse> {
+    const payload: GetItemsPayload = this.generatePayload(asins, condition);
     const request = new GetItemsRequest(
       payload,
       this.credentials.tag,
@@ -29,7 +29,7 @@ export default class Paapi {
       return data;
     } catch (error) {
       this.error(error.message);
-      this.errors.add(error.message)
+      this.errors.add(error.message);
     }
   }
 
@@ -42,14 +42,14 @@ export default class Paapi {
   }
 
   flushErrors() {
-    this.errors.clear()
+    this.errors.clear();
   }
 
   /* PRIVATE METHODS BELOW */
 
-  private generatePayload(asins: string[]): GetItemsPayload {
+  private generatePayload(asins: string[], condition): GetItemsPayload {
     return {
-      Condition: "New",
+      Condition: condition,
       ItemIdType: "ASIN",
       ItemIds: asins,
       OfferCount: 1,
