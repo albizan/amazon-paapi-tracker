@@ -49,7 +49,7 @@ export default class PaapiTask {
   }
 
   getErrors(): string[] {
-    return Array.from(this.errorMessages);
+    return Array.from(this.errorMessages).concat(this.paapi.getErrors());
   }
 
   private getTask(): Task {
