@@ -37,7 +37,7 @@ export default class App {
       console.log("Job worker created and started");
 
       bot.launch();
-      console.log("\nAll system running...");
+      console.log("\nAll systems running...");
     } catch (error) {
       console.error(error.message);
     }
