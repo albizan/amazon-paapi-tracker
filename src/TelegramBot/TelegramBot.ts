@@ -72,9 +72,11 @@ export default class TelegramBot {
                   inline_keyboard: [[Markup.button.url("Apri Amazon", offer.product.url)]],
                 },
               });
+            } else {
+              ctx.reply("Non ho trovato corrispondenze con il prezzo precedentemente inviato, impossibile inoltrare messaggio nel canale");
             }
           } else {
-            ctx.reply("Non ho trovato corrispondenze con il prezzo precedentemente inviato, impossibile inoltrare messaggio nel canale");
+            ctx.reply("Amazon ha restituito 429");
           }
         }
       }
