@@ -1,23 +1,24 @@
 import { AmazonProduct } from "../entities/AmazonProduct";
+import EMOJI from "./emojis";
 
 export const discountMessage = (savedItem: AmazonProduct, price: number, oldPrice: number, condition: string, diff: number = 0, seller = "N/A") => {
   return `<a href='${savedItem.image}'>&#8204;</a><b>${diff.toFixed(2)}% di ribasso</b>\n
-    \n${savedItem.title}
-    \nAsin: <code>${savedItem.asin}</code>
-    \nCondizione: ${condition}
-    \nPrezzo: <i>${oldPrice}€ => ${price}€</i>
-    \nSconto: ${diff.toFixed(2)}%
-    \nVenditore: ${seller}
+    \n<b>${savedItem.title}</b>
+    \n${EMOJI.packageIcon} <b>CONDIZIONE</b> ${EMOJI.packageIcon}\n<code>${condition}</code>
+    \n${EMOJI.key} <b>ASIN</b> ${EMOJI.key}\n<code>${savedItem.asin}</code>
+    \n${EMOJI.creditCard} <b>PREZZO</b> ${EMOJI.creditCard}\n<i>${oldPrice}€ => ${price}€</i>
+    \n${EMOJI.banknote} <b>RIBASSO</b> ${EMOJI.banknote}\n${diff.toFixed(2)}%
+    \n${EMOJI.silhouette} <b>VENDITORE</b> ${EMOJI.silhouette}\n${seller}
     \n<a href="${savedItem.url}">Premi per aprire amazon</a>`;
 };
 
 export const availableAgainMessage = (savedItem: AmazonProduct, price: number, condition: string, seller = "N/A") => {
   return `<a href='${savedItem.image}'>&#8204;</a><b>NUOVAMENTE DISPONIBILE</b>\n
-    \n${savedItem.title}
-    \nAsin: <code>${savedItem.asin}</code>
-    \nCondizione: ${condition}
-    \nPrezzo: <i>${price}€</i>
-    \nVenditore: ${seller}
+    \n<b>${savedItem.title}</b>
+    \n${EMOJI.packageIcon} <b>CONDIZIONE</b> ${EMOJI.packageIcon}\n<code>${condition}</code>
+    \n${EMOJI.key} <b>ASIN</b> ${EMOJI.key}\n<code>${savedItem.asin}</code>
+    \n${EMOJI.creditCard} <b>PREZZO</b> ${EMOJI.creditCard}\n<i>${price}€</i>
+    \n${EMOJI.silhouette} <b>VENDITORE</b> ${EMOJI.silhouette}\n${seller}
     \n<a href="${savedItem.url}">Premi per aprire amazon</a>`;
 };
 
@@ -66,7 +67,7 @@ export const createKeepaLink = (asin: string) => {
 
 export const channelNotification = (item: AmazonProduct, price: number, sellerName: string, condition: string): string => {
   return `<a href='${item.image}'>&#8204;</a><b>${item.title}</b>
-  \nCondizione: ${condition}
-  \nPrezzo: <i>${price}€</i>
-  \nVenditore: ${sellerName}`;
+    \n${EMOJI.packageIcon} <b>CONDIZIONE</b> ${EMOJI.packageIcon}\n<code>${condition}</code>
+    \n${EMOJI.creditCard} <b>PREZZO</b> ${EMOJI.creditCard}\n<i>${price}€</i>
+    \n${EMOJI.silhouette} <b>VENDITORE</b> ${EMOJI.silhouette}\n${sellerName}`;
 };
