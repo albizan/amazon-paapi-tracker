@@ -55,7 +55,7 @@ export default class TelegramBot {
         const offer = await offerNotificationRepository.findOne(messageId);
 
         if (offer?.type == NEW) {
-          this.instance.telegram.sendMessage(offerChannel, channelNotification(offer.product, offer.price, offer.sellerName, offer.type), {
+          this.instance.telegram.sendMessage(offerChannel, channelNotification(offer.product, offer.price, offer.sellerName, "Nuovo"), {
             parse_mode: "HTML",
             reply_markup: {
               inline_keyboard: [[Markup.button.url("Apri Amazon", offer.product.url)]],
@@ -66,7 +66,8 @@ export default class TelegramBot {
           if (item) {
             if (item.Offers?.Listings[0]?.Price?.Amount === offer.price) {
               const sellerName = item.Offers?.Listings[0]?.MerchantInfo?.Name;
-              this.instance.telegram.sendMessage(offerChannel, channelNotification(offer.product, offer.price, sellerName, offer.type), {
+              const subCondition = item.Offers?.Listings[0]?.Condition?.SubCondition?.Value;
+              this.instance.telegram.sendMessage(offerChannel, channelNotification(offer.product, offer.price, sellerName, subCondition), {
                 parse_mode: "HTML",
                 reply_markup: {
                   inline_keyboard: [[Markup.button.url("Apri Amazon", offer.product.url)]],
