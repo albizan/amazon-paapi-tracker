@@ -53,7 +53,15 @@ export default class Paapi {
       ItemIdType: "ASIN",
       ItemIds: asins,
       OfferCount: 1,
-      Resources: ["ItemInfo.Title", "Images.Primary.Large", "Offers.Summaries.LowestPrice", "Offers.Listings.Price", "Offers.Listings.MerchantInfo"],
+      Resources: [
+        "ItemInfo.Title",
+        "Images.Primary.Large",
+        "Offers.Summaries.LowestPrice",
+        "Offers.Listings.Price",
+        "Offers.Listings.MerchantInfo",
+        "Offers.Listings.Condition",
+        "Offers.Listings.Condition.SubCondition",
+      ],
     };
   }
 
